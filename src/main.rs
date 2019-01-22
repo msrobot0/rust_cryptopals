@@ -21,37 +21,32 @@ fn hex2base64(){
     for c in _input.chars(){
         if let Some(&byte) =  hexmap.get::<str>(&c.to_string().to_uppercase()) {
             let mut byte_vec: Vec<String> = byte.chars().map(|x| x.to_string()).collect();
-            let rem = if tmp_vec.len() %24; 
-            if rem > 0{
-
-                tmp_vec.append(&mut byte_vec.get(0..2).unwrap().iter().cloned().collect());
-                
+            println!("{:?}",tmp_vec.len());
+            let rem = (24 - tmp_vec.len()) - 1; //dont need mod
+            if rem < 4 {
+                    tmp_vec.append(&mut byte_vec.get(0..rem).unwrap().iter().cloned().collect());
+            }else{
+                    tmp_vec.append(&mut byte_vec);
             }
-
-            if (tmp_vec.len() == 24){}
+            if tmp_vec.len() == 24{
                         let mut ap = bin2dec(&mut tmp_vec).chars().collect();
                         output.append(&mut ap);
                         tmp_vec.truncate(0);
             }
-            println!("LEN {:?}", tmp_vec.len());
-            if tmp_vec.len() ==4 {
-                //let mut u: Vec<char> = byte_vec.splice(..2,new.iter().cloned()).collect(); //not good rust
-                tmp_vec.append(&mut byte_vec.get(0..2).unwrap().iter().cloned().collect());
-                let mut ap = bin2dec(&mut tmp_vec).chars().collect();
-                output.append(&mut ap);
-                tmp_vec.truncate(0);
-                tmp_vec.append(&mut byte_vec.get(2..4).unwrap().iter().cloned().collect()); //how do i do [2:]
-            }else{
-                tmp_vec.append(&mut byte_vec);
-                println!("LEN ELSE {:?} {:?}", tmp_vec.len(),tmp_vec);
-                if tmp_vec.len() == 6 {
-                }
-            
+            if rem < 4 {
+                    tmp_vec.append(&mut byte_vec.get(rem..byte_vec.len()).unwrap().iter().cloned().collect());
             }
+                //println!("LEN ELSE {:?} {:?}", tmp_vec.len(),tmp_vec);
+        
         }
     }
     if tmp_vec.len() > 0 {
-        tmp_vec.append(&mut vec!["0".to_string(),"0".to_string()]);
+        //tmp_vec.resize_with(24,||{p = "0"; p});//may not always be nexessary
+        let finalrem: i32 = tmp_vec.len() as i32 % 24;
+        let mut zero =  vec![String::from("0")];
+        for _i in 0..finalrem {//bogus
+                    tmp_vec.append(&mut zero);
+        }
         let mut ap = bin2dec(&mut tmp_vec).chars().collect();
         output.append(&mut ap);
     }
@@ -64,18 +59,27 @@ fn hex2base64(){
     println!("In Base64 that is {:?}", output);
 }
 fn bin2dec(mut _byte_vec: &Vec<String>) -> (String){
-    let mapping: &'static str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    println!("Tst Base64 that is {:?} {:?}", _byte_vec.len(),_byte_vec);
+    let mapping: &'static str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="; //should be global figure that out
+    let mut base64 = String::new();
     
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    for bit in _byte_vec{
-           if bit == "1" {
-            s += 2^i; 
+    let mut i: i32 = 0;    
+    for bit in _byte_vec.chunks(6){
+        if i == 6 {
+            base64.push(mapping.chars().nth(s as usize).unwrap()); //.unwrap().to_string());
+            println!("Tst Base64 that is {:?}, {:?}", s,base64);
+            i = 0;
+            s = 0;
+        }
+        if bit == "1" {
+            println!("Tst is {:?}, {:?}", s,i);
+            s += i32::pow(2,i as u32);
         }
         i += 1;
     }
-    ///println!("s {:?} {:?}", s,mapping.chars().nth(s as usize).unwrap());
-    return mapping.chars().nth(s as usize).unwrap().to_string();
+    base64.push(mapping.chars().nth(s as usize).unwrap()); //.unwrap().to_string());
+    println!("Tst Base64 that is {:?} {:?} {:?}", s,_byte_vec,base64);
+    //for i <6 add ==
+    return base64;
 }
     
