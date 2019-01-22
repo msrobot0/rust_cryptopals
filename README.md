@@ -1,7 +1,5 @@
-Implemenation of 
+Implemenation of [cryptopals](https://cryptopals.com) in [Rust](https://doc.rust-lang.org)
 =======
-
-[cryptopals][https://cryptopals.com] in [Rust][https://doc.rust-lang.org]
 
 ### Set 1 Problem 1
 
