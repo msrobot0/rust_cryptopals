@@ -8,26 +8,20 @@ fn main() {
 fn q_1_2() {
     let _input1 = String::from("1c0111001f010100061a024b53535009181c");
     let _input2 = String::from("686974207468652062756c6c277320657965");
-    let _output = String::from("746865206b696420646f6e277420706c6179");
-    let mut _bin_in1 = hex_decoding(_input1);
-    let mut _bin_in2 = hex_decoding(_input2);
-    let diff: usize = _bin_in1.len() - _bin_in2.len();
+    let _output = String::from("686974207468652062756c6c277320657965");
+    let _bin_in1 = hex_decoding(_input1);
+    let _bin_in2 = hex_decoding(_input2);
+    let diff: usize = _input.len() - _input2.len();
     let mut result: Vec<String> = Vec::new();  //does not need to be mut
 
-    // A BIT HACKY
-    //_bin_in1.reverse();
-  //  _bin_in2.reverse();
-    println!("{:?}",_bin_in1);
-    println!("{:?}",_bin_in2);
-    
+    // A BIT HACKY 
     if diff < 0{
-        result = fixed_xor(& _bin_in2,&_bin_in1, (diff as i32).abs());
+        result = fixed_xor(_bin_in1,_bin_in2, diff.abs());
+        //println!("{:?}",result);
     }else{
-        result = fixed_xor(& _bin_in2,&_bin_in1, (diff as i32).abs());
+        result = fixed_xor(_input2.to_vec(),_input.to_vec(), diff.abs());
+      //  println!("{:?}",result);
     }
-    println!("{:?}",result);
-    let mut hex_result = bin2dec(&mut result);
-    println!("{:?}",hex_result);
 }
 fn q_1_1() {
     println!("Cryptopals Set 1 Challenge 1!");
@@ -35,24 +29,19 @@ fn q_1_1() {
 }
 
 
-fn fixed_xor(mut _smaller_str: &Vec<String>, mut _larger_str: &Vec<String>, diff: i32) -> (Vec<String>){
+fn fixed_xor(_smaller_str: Vec<String>, _larger_str: Vec<String>, diff: usize) -> (Vec<String>){
     let mut bit_vec: Vec<String> = Vec::new();
     //this is idiotic - I need to figure out a better way
     let mut zero = vec![String::from("0")];
     let mut one = vec![String::from("1")];
-    let mut _i: i32 = (_larger_str.len()-1) as i32;
-    for c in _larger_str{
-
-       let mut ch = vec![String::from(c.clone())];
-        if  _i < diff{
-            
-            bit_vec.append(&mut ch);
-        }else if _larger_str[_i as usize] == _smaller_str[_i as usize] {
-            bit_vec.append(&mut zero.clone());
+    for _i in _larger_str.len()..0 {
+        if _i < diff{
+            bit_vec.append(&mut _larger_str[_i]);
+        }else if _larger_str[_i] == _smaller_str[_i] {
+            bit_vec.append(&mut zero);
         }else{
-            bit_vec.append(&mut one.clone());
+            bit_vec.append(&mut one);
         }
-        _i -= 1;
     }
     return bit_vec;
 }
