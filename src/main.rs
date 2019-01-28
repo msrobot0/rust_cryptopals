@@ -3,7 +3,7 @@ use std::iter::FromIterator;
 use std::collections::HashMap;
 use std::vec::Vec;
 fn main() {
-    q_1_1();
+    q_1_2();
 }
 fn q_1_2() {
     let _input1 = String::from("1c0111001f010100061a024b53535009181c");
@@ -17,16 +17,14 @@ fn q_1_2() {
     // A BIT HACKY
     //_bin_in1.reverse();
     //  _bin_in2.reverse();
-    println!("{:?}", _bin_in1);
-    println!("{:?}", _bin_in2);
 
     if diff < 0 {
         result = fixed_xor(&_bin_in2, &_bin_in1, (diff as i32).abs());
     } else {
         result = fixed_xor(&_bin_in2, &_bin_in1, (diff as i32).abs());
     }
-    let mut hex_result = binTo24(&mut result);
-    println!("{:?}", hex_result);
+    let mut hex_result = hex_encoding(&mut result);
+    println!("{:?}", hex_result == _output);
 }
 fn q_1_1() {
     println!("Cryptopals Set 1 Challenge 1!");
@@ -45,19 +43,13 @@ fn fixed_xor(
     let mut _i: i32 = (_larger_str.len() - 1) as i32;
 
     for c in _larger_str {
-        println!(
-            "{:?},{:?}",
-            _larger_str[_i as usize], _smaller_str[_i as usize]
-        );
         let mut ch = vec![String::from(c.clone())];
         if _i < diff {
             bit_vec.append(&mut ch.clone());
         } else if _larger_str[_i as usize] == _smaller_str[_i as usize] {
             bit_vec.append(&mut zero.clone());
-            println!("0");
         } else {
             bit_vec.append(&mut one.clone());
-            println!("1");
         }
         _i -= 1;
     }
@@ -89,8 +81,6 @@ fn hex_decoding(mut _input: String) -> (Vec<String>) {
     let mut bytes: Vec<String> = Vec::new();
     let mut output: Vec<char> = Vec::new();
     for c in _input.chars() {
-        println!("Bytes {:?}", c);
-
         if let Some(&byte) = hexmap.get::<str>(&c.to_string().to_uppercase()) {
             let mut byte_vec: Vec<String> = byte.chars().map(|x| x.to_string()).collect();
             bytes.append(&mut byte_vec);
@@ -132,6 +122,26 @@ fn hex2base64() {
         assert!(finaloutput == _test);
     }
 }
+fn hex_encoding(mut bytes: &Vec<String>) -> (String) {
+    let mapping: &'static str = "0123456789abcdef";
+    let mut base64 = String::new();
+    let mut output: Vec<char> = Vec::new();
+    let mut i: i32 = 3;
+    let mut s: i32 = 0;
+    for bit_vec in bytes.chunks(4) {
+        for b in bit_vec {
+            if b == "1" {
+                s += i32::pow(2, i as u32);
+            }
+            i -= 1;
+        }
+        base64.push(mapping.chars().nth(s as usize).unwrap());
+        s = 0;
+        i = 3;
+    }
+    //this padding is a hot mess
+    return base64;
+}
 fn binTo24(mut bytes: &Vec<String>) -> (Vec<char>) {
     let mut output: Vec<char> = Vec::new();
     for b in bytes.chunks(24) {
@@ -153,7 +163,6 @@ fn bin2dec(mut _byte_vec: &Vec<String>) -> (String) {
     let mut zero = vec![String::from("0")];
     for bit in _byte_vec.chunks(6) {
         let mut bit_vec = bit.to_vec();
-        //println!("{:?}", bit_vec);
         i = 0;
         s = 0;
         let len = 6 - bit_vec.len();
