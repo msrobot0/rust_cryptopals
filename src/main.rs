@@ -114,7 +114,6 @@ fn hex2base64() {
 
     let mut _input = String::new();
     let mut _output = String::new();
-
     let mut _mode = String::new();
     println!("Interactive Y/N?");
     io::stdin()
