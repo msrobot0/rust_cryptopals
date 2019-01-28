@@ -38,16 +38,32 @@ fn q_1_1() {
 }
 
 fn fixed_xor_cipher(_input: String) {
-    let mapping: &'static str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    let len: usize = _input.len();
+    //let mapping: &'static str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    let smapping: &'static str = "0123456789abcdef";
+    let mut mapping = String::new();
+    let len: usize = _input.len() / 2;
     let mut _bin_in = hex_decoding(_input);
-    for c in mapping.chars() {
-        //(0..10).map(|_| "X").collect::<String>();
-        let _guess_str = std::iter::repeat(c).take(len).collect::<String>();
-        let _guess_bin = hex_decoding(_guess_str);
-        let mut guesshex = fixed_xor(&_bin_in, &_guess_bin, 0);
-        let output = hex_encoding(&mut guesshex);
-        println!("{:?}", output);
+    for x in smapping.chars() {
+        for y in smapping.chars() {
+            mapping.clear();
+            mapping.push_str(&x.to_string());
+            mapping.push_str(&y.to_string());
+
+            let _guess_str = (0..len)
+                .map(|_| format!("{:?}", mapping))
+                .collect::<String>();
+
+            //let _guess_str = std::iter::repeat(&mapping.clone()).take(len).collect::<String>();
+
+            //println!("{:?}",c );
+            //println!("{:?}", _bin_in);
+            //println!("{:?}", _guess_str);
+            let _guess_bin = hex_decoding(_guess_str);
+            let mut guesshex = fixed_xor(&_bin_in, &_guess_bin, 0);
+            //     let output = hex_encoding(&mut guesshex);
+            let soutput = binTo24(&mut guesshex);
+            println!("{:?}", String::from_iter(soutput));
+        }
     }
 }
 
@@ -60,6 +76,7 @@ fn fixed_xor(
     //this is idiotic - I need to figure out a better way
     let mut zero = vec![String::from("0")];
     let mut one = vec![String::from("1")];
+    //println!("{:?}", _larger_str);
     let mut _i: i32 = (_larger_str.len() - 1) as i32;
 
     for c in _larger_str {
