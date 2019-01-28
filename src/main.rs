@@ -3,7 +3,13 @@ use std::iter::FromIterator;
 use std::collections::HashMap;
 use std::vec::Vec;
 fn main() {
-    q_1_2();
+    q_1_3();
+}
+fn q_1_3() {
+    println!("Cryptopals Set 1 Challenge 3!");
+    let _input =
+        String::from("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
+    fixed_xor_cipher(_input);
 }
 fn q_1_2() {
     let _input1 = String::from("1c0111001f010100061a024b53535009181c");
@@ -29,6 +35,20 @@ fn q_1_2() {
 fn q_1_1() {
     println!("Cryptopals Set 1 Challenge 1!");
     hex2base64();
+}
+
+fn fixed_xor_cipher(_input: String) {
+    let mapping: &'static str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    let len: usize = _input.len();
+    let mut _bin_in = hex_decoding(_input);
+    for c in mapping.chars() {
+        //(0..10).map(|_| "X").collect::<String>();
+        let _guess_str = std::iter::repeat(c).take(len).collect::<String>();
+        let _guess_bin = hex_decoding(_guess_str);
+        let mut guesshex = fixed_xor(&_bin_in, &_guess_bin, 0);
+        let output = hex_encoding(&mut guesshex);
+        println!("{:?}", output);
+    }
 }
 
 fn fixed_xor(
