@@ -231,7 +231,7 @@ fn read_file(filename: String) -> (Vec<String>) {
     let path_to_read = Path::new(&filename);
     let mut file = File::open(&path_to_read).unwrap();
     match file.read_to_string(&mut buffer) {
-        Ok(yay_read) => yay_read,
+        Ok(yes) => yes,
         Err(_) => 0,
     };
     let m_lines: Vec<String> = buffer.lines().map(ToOwned::to_owned).collect();
