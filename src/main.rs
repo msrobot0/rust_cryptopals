@@ -1,10 +1,16 @@
 use std::io;
+use std::path::Path;
+use std::fs::File;
+use std::io::BufReader;
+use std::io::Read;
 use std::iter::FromIterator;
 use std::collections::HashMap;
 use std::vec::Vec;
 fn main() {
-    q_1_3();
+    //    q_1_3();
+    read_file(String::from("7.txt"));
 }
+
 fn q_1_3() {
     println!("Cryptopals Set 1 Challenge 3!");
     let _input =
@@ -219,4 +225,15 @@ fn bin2dec(mut _byte_vec: &Vec<String>) -> (String) {
     //println!("Tst Base64 that is {:?} {:?} {:?}", s,_byte_vec,base64);
     //for i <6 add ==
     return base64;
+}
+fn read_file(filename: String) -> (Vec<String>) {
+    let mut buffer = String::new();
+    let path_to_read = Path::new(&filename);
+    let mut file = File::open(&path_to_read).unwrap();
+    match file.read_to_string(&mut buffer) {
+        Ok(yay_read) => yay_read,
+        Err(_) => 0,
+    };
+    let m_lines: Vec<String> = buffer.lines().map(ToOwned::to_owned).collect();
+    return m_lines;
 }
